@@ -193,6 +193,8 @@ Prioridad: 🔥 Alta / 🟡 Media
 
 > El link en "Ver anuncio" debe apuntar directamente al anuncio scrapeado en Meta Ads Library, para que el usuario pueda verlo con un clic.
 
+> **Cantidad de productos:** Si el usuario no especifica cuántos quiere, el agente siempre entrega un mínimo de 10. Si pide una cantidad exacta (ej: "dame 5 productos"), respetar ese número.
+
 ---
 
 ## Tono del agente
