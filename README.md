@@ -85,27 +85,23 @@ El agente revisa cada producto del catálogo contra la biblioteca de anuncios y 
 
 ## ¿Qué te entrega el agente?
 
-Por cada producto encontrado, recibes una ficha como esta:
+El agente genera un archivo HTML interactivo listo para abrir en el navegador. El archivo se guarda en la carpeta del proyecto con el nombre `productos-[keyword]-[fecha].html`.
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🏆 Producto #1 — Corrector de postura magnético
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+La presentación tiene tres tipos de pantallas:
 
-📌 Qué es: Faja para la espalda con imanes que corrige la postura mientras la usas.
+**Portada** — muestra el resumen de la búsqueda: cuántos productos se analizaron, cuántos países y cuántos tienen prioridad alta.
 
-😣 Problema que resuelve: Dolor de espalda por pasar horas sentado frente a la computadora.
+**Slide por producto (mínimo 10)** — cada producto tiene:
+- Nombre, descripción y el problema que resuelve
+- Métricas de validación: número de anuncios activos, días corriendo y cantidad de vendedores en el país de referencia
+- Países donde se está pautando
+- Situación en Perú: sin competencia / competencia baja / saturado
+- Enlace directo a Meta Ads Library para verificar la señal
+- Badge de prioridad: 🔥 Alta o 🟡 Media
 
-📊 Señales de venta:
-  • País de referencia: México · 180 anuncios activos · 3 semanas corriendo
-  • 🔗 Ver anuncio: https://www.facebook.com/ads/library/...
+**Slide de cierre** — tabla resumen con los 10 productos, su prioridad, la señal externa y el estado en Perú.
 
-🇵🇪 Mercado en Perú: Solo 1 vendedor con pocos anuncios. Mercado casi sin explotar.
-
-✅ Atributos: Resultado inmediato · Factor WOW · Fácil de importar · Vendible en pack
-
-Prioridad: 🔥 Alta
-```
+Navegás con las flechas del teclado ← → o con los botones en pantalla.
 
 ---
 
