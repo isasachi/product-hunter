@@ -25,21 +25,15 @@ cd product-hunter
 
 Si no tienes Git, descarga el ZIP desde el botón verde de GitHub y descomprímelo.
 
-### Paso 2 — Configura tu API key de Firecrawl
+### Paso 2 — Instala las skills de Firecrawl
 
-Copia el archivo de ejemplo:
+Ejecuta este comando en tu terminal. El asistente te pedirá tu API key de Firecrawl durante el proceso:
 
 ```bash
-cp .env.example .env
+npx -y firecrawl-cli@latest init --all --browser
 ```
 
-Abre el archivo `.env` y reemplaza `fc-your-api-key-here` con tu clave real:
-
-```
-FIRECRAWL_API_KEY=fc-abc123...
-```
-
-Puedes obtener tu API key en [firecrawl.dev/app](https://www.firecrawl.dev/app).
+Cuando el wizard te lo pida, ingresa tu API key. Puedes obtenerla en [firecrawl.dev/app](https://www.firecrawl.dev/app).
 
 ### Paso 3 — Abre el proyecto en Claude Code
 

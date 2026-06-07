@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Productos Ganadores</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg:        #0e0c0a;
+    --surface:   #181410;
+    --card:      #201c18;
+    --border:    #2e2820;
+    --accent:    #e07b2a;
+    --accent2:   #f5a623;
+    --text:      #f0ebe4;
+    --muted:     #7a6f64;
+    --success:   #3dba7e;
+    --warn:      #e07b2a;
+    --danger:    #e05050;
+    --high:      #e07b2a;
+    --mid:       #c9a84c;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ─── DECK WRAPPER ─── */
+  .deck {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .35s ease;
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ─── COVER SLIDE ─── */
+  .slide-cover {
+    background: radial-gradient(ellipse at 30% 60%, #2a1a08 0%, #0e0c0a 70%);
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 8vw;
+    gap: 28px;
+  }
+  .cover-eyebrow {
+    font-size: .75rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .cover-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 9vw, 8rem);
+    line-height: .95;
+    color: var(--text);
+  }
+  .cover-title span { color: var(--accent); }
+  .cover-meta {
+    display: flex;
+    gap: 32px;
+    margin-top: 12px;
+  }
+  .cover-stat { display: flex; flex-direction: column; gap: 4px; }
+  .cover-stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .cover-stat-label { font-size: .75rem; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .cover-date { font-size: .8rem; color: var(--muted); margin-top: 8px; }
+
+  /* ─── PRODUCT SLIDE ─── */
+  .slide-product {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 0;
+    background: var(--bg);
+  }
+
+  /* TOP BAR */
+  .slide-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 40px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar-index {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    color: var(--muted);
+    letter-spacing: .12em;
+  }
+  .priority-badge {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  .priority-high { background: rgba(224,123,42,.15); color: var(--high); border: 1px solid rgba(224,123,42,.3); }
+  .priority-mid  { background: rgba(201,168,76,.12); color: var(--mid);  border: 1px solid rgba(201,168,76,.3); }
+
+  /* MAIN GRID */
+  .slide-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    overflow: hidden;
+  }
+
+  /* LEFT PANEL */
+  .panel-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 32px 40px;
+    border-right: 1px solid var(--border);
+    gap: 20px;
+  }
+
+  .product-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.2rem, 4.5vw, 4rem);
+    line-height: 1;
+    color: var(--text);
+  }
+
+  .product-what {
+    font-size: .95rem;
+    color: var(--muted);
+    line-height: 1.55;
+    max-width: 38ch;
+  }
+
+  .pain-block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .pain-label {
+    font-size: .65rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .pain-text {
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .attrs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 4px;
+  }
+  .attr-chip {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 500;
+    background: rgba(240,235,228,.06);
+    border: 1px solid var(--border);
+    color: var(--text);
+    letter-spacing: .03em;
+  }
+
+  /* RIGHT PANEL */
+  .panel-right {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    overflow: hidden;
+  }
+
+  /* VALIDATION BLOCK */
+  .validation-block {
+    flex: 1;
+    padding: 28px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .block-eyebrow {
+    font-size: .65rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: .68rem;
+    color: var(--muted);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  .countries-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .country-tag {
+    padding: 3px 11px;
+    border-radius: 6px;
+    font-size: .75rem;
+    background: rgba(224,123,42,.1);
+    border: 1px solid rgba(224,123,42,.2);
+    color: var(--accent2);
+    font-weight: 500;
+  }
+
+  .page-type {
+    font-size: .82rem;
+    color: var(--muted);
+  }
+  .page-type strong { color: var(--text); }
+
+  /* PERU BLOCK */
+  .peru-block {
+    flex: 1;
+    padding: 22px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .peru-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .peru-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-green  { background: var(--success); box-shadow: 0 0 8px var(--success); }
+  .dot-yellow { background: var(--mid);     box-shadow: 0 0 8px var(--mid); }
+  .dot-red    { background: var(--danger);  box-shadow: 0 0 8px var(--danger); }
+
+  .peru-status-text { font-size: .9rem; font-weight: 500; color: var(--text); }
+  .peru-detail { font-size: .82rem; color: var(--muted); line-height: 1.5; }
+  .diferenciacion {
+    font-size: .82rem;
+    padding: 8px 14px;
+    background: rgba(224,123,42,.08);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  /* CTA LINK */
+  .cta-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 20px;
+    background: var(--accent);
+    color: #0e0c0a;
+    font-weight: 700;
+    font-size: .8rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 8px;
+    align-self: flex-start;
+    margin-top: 4px;
+    transition: background .2s;
+  }
+  .cta-link:hover { background: var(--accent2); }
+  .cta-link svg { width: 14px; height: 14px; }
+
+  /* ─── SUMMARY SLIDE ─── */
+  .slide-summary {
+    padding: 48px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    background: radial-gradient(ellipse at 70% 30%, #1a1008 0%, #0e0c0a 70%);
+  }
+  .summary-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem;
+    color: var(--text);
+  }
+  .summary-title span { color: var(--accent); }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .85rem;
+  }
+  .summary-table th {
+    text-align: left;
+    padding: 10px 16px;
+    font-size: .65rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+  }
+  .summary-table td {
+    padding: 11px 16px;
+    border-bottom: 1px solid rgba(46,40,32,.6);
+    vertical-align: middle;
+  }
+  .summary-table tr:last-child td { border-bottom: none; }
+  .summary-table tr:hover td { background: rgba(255,255,255,.02); }
+  .s-num { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .s-name { font-weight: 500; color: var(--text); }
+  .s-priority-high { color: var(--high); font-weight: 600; }
+  .s-priority-mid  { color: var(--mid);  font-weight: 600; }
+  .s-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: .78rem;
+    opacity: .8;
+    transition: opacity .2s;
+  }
+  .s-link:hover { opacity: 1; }
+
+  /* ─── BOTTOM NAV ─── */
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 40px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    user-select: none;
+  }
+  .nav-counter { font-size: .78rem; color: var(--muted); letter-spacing: .08em; }
+  .nav-arrows { display: flex; gap: 10px; }
+  .nav-btn {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 1rem;
+    transition: background .15s, border-color .15s;
+  }
+  .nav-btn:hover { background: var(--border); border-color: var(--accent); }
+  .nav-btn:disabled { opacity: .25; cursor: default; }
+  .nav-hint { font-size: .7rem; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ═══════════════════════════════
+       SLIDE 0 — PORTADA
+  ═══════════════════════════════ -->
+  <div class="slide slide-cover active">
+    <span class="cover-eyebrow">Búsqueda de productos · Dropshipping Perú</span>
+    <h1 class="cover-title">Productos<br>Ganadores<br><span>Espalda</span></h1>
+    <div class="cover-meta">
+      <div class="cover-stat">
+        <span class="cover-stat-num">10</span>
+        <span class="cover-stat-label">Productos encontrados</span>
+      </div>
+      <div class="cover-stat">
+        <span class="cover-stat-num">5</span>
+        <span class="cover-stat-label">Países analizados</span>
+      </div>
+      <div class="cover-stat">
+        <span class="cover-stat-num">7</span>
+        <span class="cover-stat-label">Alta prioridad</span>
+      </div>
+    </div>
+    <span class="cover-date">Generado el 28 mayo 2026 · Meta Ads Library</span>
+  </div>
+
+
+  <!-- ═══════════════════════════════
+       SLIDE 1 — PRODUCTO
+  ═══════════════════════════════ -->
+  <div class="slide slide-product">
+    <div class="slide-topbar">
+      <span class="topbar-index">Producto 01 / 10</span>
+      <span class="priority-badge priority-high">🔥 Prioridad Alta</span>
+    </div>
+
+    <div class="slide-body">
+      <!-- LEFT -->
+      <div class="panel-left">
+        <h2 class="product-name">Corrector de Postura Magnético</h2>
+        <p class="product-what">Dispositivo que se coloca en la espalda y usa imanes para mantener la columna en posición correcta sin esfuerzo consciente.</p>
+        <div class="pain-block">
+          <span class="pain-label">Dolor que resuelve</span>
+          <p class="pain-text">Mala postura por trabajo en oficina — espalda encorvada, dolor cervical y fatiga acumulada.</p>
+        </div>
+        <div class="attrs">
+          <span class="attr-chip">✓ Sin esfuerzo</span>
+          <span class="attr-chip">✓ Resultado visible</span>
+          <span class="attr-chip">✓ Factor WOW</span>
+          <span class="attr-chip">✓ Fácil importar</span>
+          <span class="attr-chip">✓ Upsell posible</span>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="panel-right">
+        <div class="validation-block">
+          <span class="block-eyebrow">Señales de validación · Meta Ads Library</span>
+          <div class="stats-row">
+            <div class="stat-card">
+              <span class="stat-num">240</span>
+              <span class="stat-label">Anuncios activos</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-num">34</span>
+              <span class="stat-label">Días corriendo</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-num">1</span>
+              <span class="stat-label">Producto en la página</span>
+            </div>
+          </div>
+          <div>
+            <span class="block-eyebrow" style="margin-bottom:8px;display:block;">Países donde se pauta</span>
+            <div class="countries-row">
+              <span class="country-tag">🇲🇽 México</span>
+              <span class="country-tag">🇨🇴 Colombia</span>
+              <span class="country-tag">🇦🇷 Argentina</span>
+              <span class="country-tag">🇺🇸 Estados Unidos</span>
+            </div>
+          </div>
+          <p class="page-type">Tipo de página: <strong>Mono-producto</strong> — toda la inversión concentrada en este artículo.</p>
+          <a class="cta-link" href="https://www.facebook.com/ads/library/?id=XXXXXXX" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+            Ver anuncio en Meta
+          </a>
+        </div>
+
+        <div class="peru-block">
+          <span class="block-eyebrow">Mercado en Perú 🇵🇪</span>
+          <div class="peru-status">
+            <div class="peru-dot dot-green"></div>
+            <span class="peru-status-text">Sin competencia directa</span>
+          </div>
+          <p class="peru-detail">Buscamos "corrector postura", "faja espalda magnética" y "postura magnetos" en Perú. No hay páginas peruanas pautando este formato específico.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════
+       SLIDE 2 — PRODUCTO CON COMPETENCIA Y DIFERENCIACIÓN
+  ═══════════════════════════════ -->
+  <div class="slide slide-product">
+    <div class="slide-topbar">
+      <span class="topbar-index">Producto 02 / 10</span>
+      <span class="priority-badge priority-mid">🟡 Prioridad Media</span>
+    </div>
+
+    <div class="slide-body">
+      <div class="panel-left">
+        <h2 class="product-name">Parche Térmico Lumbar de Jengibre</h2>
+        <p class="product-what">Parche adhesivo con extracto de jengibre y capsaicina que genera calor localizado para aliviar el dolor lumbar en 15–20 minutos.</p>
+        <div class="pain-block">
+          <span class="pain-label">Dolor que resuelve</span>
+          <p class="pain-text">Contractura lumbar y dolor de espalda baja — especialmente en personas que pasan mucho tiempo sentadas o de pie.</p>
+        </div>
+        <div class="attrs">
+          <span class="attr-chip">✓ Resultado inmediato</span>
+          <span class="attr-chip">✓ Sin esfuerzo</span>
+          <span class="attr-chip">✓ Pack posible</span>
+          <span class="attr-chip">✓ Fácil importar</span>
+        </div>
+      </div>
+
+      <div class="panel-right">
+        <div class="validation-block">
+          <span class="block-eyebrow">Señales de validación · Meta Ads Library</span>
+          <div class="stats-row">
+            <div class="stat-card">
+              <span class="stat-num">180</span>
+              <span class="stat-label">Anuncios activos</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-num">21</span>
+              <span class="stat-label">Días corriendo</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-num">1</span>
+              <span class="stat-label">Producto en la página</span>
+            </div>
+          </div>
+          <div>
+            <span class="block-eyebrow" style="margin-bottom:8px;display:block;">Países donde se pauta</span>
+            <div class="countries-row">
+              <span class="country-tag">🇨🇱 Chile</span>
+              <span class="country-tag">🇲🇽 México</span>
+              <span class="country-tag">🇪🇸 España</span>
+            </div>
+          </div>
+          <p class="page-type">Tipo de página: <strong>Mono-producto</strong></p>
+          <a class="cta-link" href="https://www.facebook.com/ads/library/?id=XXXXXXX" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+            Ver anuncio en Meta
+          </a>
+        </div>
+
+        <div class="peru-block">
+          <span class="block-eyebrow">Mercado en Perú 🇵🇪</span>
+          <div class="peru-status">
+            <div class="peru-dot dot-yellow"></div>
+            <span class="peru-status-text">Hay competencia — pero hay ventaja</span>
+          </div>
+          <p class="peru-detail">Encontramos 2 páginas peruanas vendiendo parches térmicos genéricos, pero ninguna usa el ángulo del jengibre.</p>
+          <div class="diferenciacion">
+            💡 <strong>Ventaja de entrada:</strong> Cambio de componente — el ingrediente "jengibre" diferencia el producto y puede justificar un precio mayor.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════
+       SLIDE FINAL — RESUMEN
+  ═══════════════════════════════ -->
+  <div class="slide slide-summary">
+    <h2 class="summary-title">Resumen <span>Rápido</span></h2>
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Producto</th>
+          <th>Prioridad</th>
+          <th>Anuncios</th>
+          <th>Perú</th>
+          <th>Link</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="s-num">01</td>
+          <td class="s-name">Corrector de Postura Magnético</td>
+          <td class="s-priority-high">🔥 Alta</td>
+          <td>240</td>
+          <td>Sin competencia</td>
+          <td><a class="s-link" href="https://www.facebook.com/ads/library/?id=XXXXXXX" target="_blank">Ver anuncio ↗</a></td>
+        </tr>
+        <tr>
+          <td class="s-num">02</td>
+          <td class="s-name">Parche Térmico Lumbar de Jengibre</td>
+          <td class="s-priority-mid">🟡 Media</td>
+          <td>180</td>
+          <td>Diferenciación posible</td>
+          <td><a class="s-link" href="https://www.facebook.com/ads/library/?id=XXXXXXX" target="_blank">Ver anuncio ↗</a></td>
+        </tr>
+        <tr>
+          <td class="s-num">03</td>
+          <td class="s-name">Producto #3</td>
+          <td class="s-priority-high">🔥 Alta</td>
+          <td>—</td>
+          <td>—</td>
+          <td><a class="s-link" href="#" target="_blank">Ver anuncio ↗</a></td>
+        </tr>
+        <!-- Repetir filas según cantidad de productos -->
+      </tbody>
+    </table>
+  </div>
+
+</div><!-- /deck -->
+
+
+<!-- ─── NAV BAR ─── -->
+<div class="nav-bar">
+  <span class="nav-counter" id="counter">1 / 4</span>
+  <div class="nav-arrows">
+    <button class="nav-btn" id="prev" onclick="navigate(-1)" disabled>←</button>
+    <button class="nav-btn" id="next" onclick="navigate(1)">→</button>
+  </div>
+  <span class="nav-hint">También puedes usar ← → del teclado</span>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+
+  function go(n) {
+    slides[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+    document.getElementById('counter').textContent = `${current + 1} / ${slides.length}`;
+    document.getElementById('prev').disabled = current === 0;
+    document.getElementById('next').disabled = current === slides.length - 1;
+  }
+
+  function navigate(dir) {
+    const next = current + dir;
+    if (next >= 0 && next < slides.length) go(next);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') navigate(1);
+    if (e.key === 'ArrowLeft')  navigate(-1);
+  });
+</script>
+</body>
+</html>

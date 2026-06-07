@@ -167,33 +167,45 @@ Si no hay diferenciación → descartar el producto.
 
 ## Cómo debe ser el output
 
-El agente debe entregar una lista de productos recomendados de forma **clara, amigable y fácil de entender**, pensada para alguien que está aprendiendo sobre marketing y ventas.
+El agente genera una **presentación HTML interactiva** (slides) con un slide por producto. El archivo se entrega listo para abrir en el navegador.
 
-### Estructura por producto
+> **Cantidad de productos:** Si el usuario no especifica cuántos quiere, el agente siempre entrega un mínimo de 10 slides. Si pide una cantidad exacta (ej: "dame 5 productos"), respetar ese número.
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🏆 Producto #N — [Nombre del producto]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+### Información obligatoria por slide
 
-📌 Qué es: [Una línea. Descripción simple del producto, sin tecnicismos.]
+Cada slide debe mostrar toda la información que justifica la recomendación, organizada visualmente de forma que no sature al usuario:
 
-😣 Problema que resuelve: [Una línea. El dolor específico que ataca.]
+| Bloque | Contenido |
+|---|---|
+| **Nombre del producto** | Claro y grande, lo primero que se ve |
+| **Qué es** | Una línea en lenguaje simple, sin tecnicismos |
+| **Problema que resuelve** | El dolor específico que ataca |
+| **Países donde se pauta** | Lista de países encontrados en Meta Ads Library |
+| **Señales de validación** | Cantidad de anuncios · Días activo · Tipo de página (mono/multi-producto) |
+| **Link al anuncio** | URL directa a Meta Ads Library, abre en nueva pestaña |
+| **Mercado en Perú** | Si hay competencia, cuánta, y si hay ventaja de entrada |
+| **Atributos cumplidos** | Lista visual de los atributos que aplican al producto |
+| **Prioridad** | Alta 🔥 / Media 🟡 — con color diferenciador en el slide |
 
-📊 Señales de venta:
-  • País de referencia: México · 240 anuncios activos · 3 semanas corriendo
-  • 🔗 Ver anuncio: https://www.facebook.com/ads/library/...
+### Diseño de los slides
 
-🇵🇪 Mercado en Perú: [Una o dos líneas. ¿Hay competencia? ¿Hay ventaja de entrada?]
+El agente debe generar los slides siguiendo estas reglas de diseño:
 
-✅ Atributos: Resultado inmediato · Factor WOW · Fácil de importar
+- **Fondo oscuro** con tipografía grande y de alto contraste — fácil de leer de un vistazo.
+- **Paleta contenida:** Un color de acento naranja/ámbar para destacar números y datos clave, blanco para texto principal, gris para datos secundarios.
+- **Datos numéricos grandes:** La cantidad de anuncios y días activos deben ser el elemento visual más prominente de la sección de validación — tamaño grande, color de acento.
+- **Chips o badges** para los atributos cumplidos — no listas de texto plano.
+- **Botón de link** al anuncio — prominente, no un texto pequeño.
+- **Navegación entre slides** con flechas o teclado (← →).
+- **Contador de slides** visible (ej: "3 / 10").
+- **Sin scroll dentro del slide** — toda la info del producto debe caber en pantalla.
 
-Prioridad: 🔥 Alta / 🟡 Media
-```
+### Estructura de navegación de la presentación
 
-> El link en "Ver anuncio" debe apuntar directamente al anuncio scrapeado en Meta Ads Library, para que el usuario pueda verlo con un clic.
-
-> **Cantidad de productos:** Si el usuario no especifica cuántos quiere, el agente siempre entrega un mínimo de 10. Si pide una cantidad exacta (ej: "dame 5 productos"), respetar ese número.
+La presentación debe incluir:
+1. **Slide de portada** — Título de la búsqueda (ej: "Productos ganadores · espalda"), fecha, total de productos encontrados.
+2. **Un slide por producto.**
+3. **Slide de cierre** — Resumen rápido: tabla con nombre, prioridad y link de todos los productos para referencia rápida.
 
 ---
 
@@ -232,3 +244,12 @@ El agente debe hablar como un amigo con experiencia en ventas, no como un report
          ↓
 [Output: lista de productos con explicación amigable]
 ```
+
+### Template de referencia
+
+El agente debe usar el archivo `slides-template.html` como base visual. Este template incluye:
+- La paleta de colores, tipografías y clases CSS definitivas.
+- La estructura de cada tipo de slide (portada, producto, resumen).
+- La lógica de navegación con teclado y botones.
+
+Al generar la presentación, el agente replica esa estructura y reemplaza los datos de ejemplo con los datos reales de cada producto encontrado.
