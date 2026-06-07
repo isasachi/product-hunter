@@ -63,61 +63,75 @@ Soluciones:   corrector postura · masajeador · parche calor · faja lumbar · 
 
 ## Flujo de trabajo paso a paso
 
-### Paso 1 — Buscar en países externos
-
-Antes de ver si un producto se puede vender en Perú, el agente lo busca en otros países para ver si ya hay gente vendiéndolo con publicidad activa.
-
-El orden de búsqueda es:
-
-1. Primero países parecidos a Perú: México, Colombia, Chile, Argentina, Ecuador.
-2. Si no hay suficiente data, países más grandes: Estados Unidos, España.
-
-> **¿Por qué países similares primero?** Porque el comportamiento del consumidor es más parecido al peruano. Lo que funciona en México tiene más chances de funcionar en Perú que lo que funciona en Estados Unidos.
+El flujo tiene **tres etapas**: generación de keywords → escaneo y descarte rápido → evaluación profunda. El agente nunca salta de la búsqueda al output sin pasar por las dos etapas de filtrado.
 
 ---
 
-### Paso 2 — Filtrar por antigüedad del anuncio
+### Etapa 1 — Escaneo: buscar y descartar rápido
 
-Al buscar en la biblioteca de anuncios, el agente aplica el filtro de fecha **"activo hasta"** con una fecha de hace al menos una semana atrás.
+Para cada combinación de keyword + país, el agente:
 
-Esto garantiza que los anuncios encontrados llevan **mínimo 10 días corriendo**.
+1. Abre la URL de búsqueda en Meta Ads Library:
+   ```
+   https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=XX&q=KEYWORD&search_type=keyword_unordered
+   ```
+2. Extrae la lista de **anunciantes individuales** que aparecen en esa búsqueda. Cada anunciante es un resultado separado con su nombre de página, cantidad de anuncios y fecha del anuncio más antiguo activo.
+3. Aplica el **descarte rápido** anunciante por anunciante:
 
-> **¿Por qué importa esto?** Porque nadie deja plata invertida en publicidad durante 10 días si el producto no está vendiendo. Es una señal de que el producto funciona.
+| Criterio | Descartar si... |
+|---|---|
+| Antigüedad | El anuncio más antiguo lleva menos de 10 días activo |
+| Volumen bruto | La página tiene menos de 30 anuncios en total |
+| Origen | La página es peruana (nombre, descripción o URL local) |
+| Categoría | La página claramente no vende productos físicos (servicios, eventos, instituciones) |
 
-**Regla:** Descartar anuncios que llevan menos de 10 días activos.
+4. Los anunciantes que **pasan el descarte rápido** avanzan a la Etapa 2.
 
----
+> Los que no pasan se descartan de inmediato — no se los analiza más. El objetivo es reducir el volumen rápido para invertir tiempo solo en candidatos reales.
 
-### Paso 3 — Filtrar por volumen de anuncios
-
-El agente revisa cuántos anuncios tiene cada página o vendedor encontrado.
-
-**Umbral mínimo: 30 a 40 anuncios.**
-
-Además, el agente debe distinguir entre:
-
-- **Páginas mono-producto:** Venden un solo producto con muchos anuncios. Son las más interesantes porque toda su inversión está concentrada en ese producto.
-- **Páginas multi-producto:** Tienen 700 anuncios pero de 70 productos distintos (unos 10 anuncios por producto). Eso no cuenta. Hay que buscar cuántos anuncios tienen del producto específico que nos interesa.
-
-> **¿Por qué 30-40 anuncios?** Porque tener pocos anuncios puede significar que están probando el producto, no que ya está validado. 30+ anuncios es señal de que están escalando porque funciona.
-
----
-
-### Paso 4 — Filtrar por origen de la página
-
-El agente verifica si la página encontrada es peruana o de otro país.
-
-**Regla:** Si la página es peruana, se descarta.
-
-> **¿Por qué?** Porque si ya hay alguien en Perú vendiéndolo activamente, el mercado podría estar tomado. El objetivo es encontrar productos que todavía no llegaron al mercado local.
-
-Solo se analizan páginas de otros países para confirmar que el producto ya funciona afuera, antes de traerlo a Perú.
+**Orden de países a explorar:**
+1. Primero LATAM similar a Perú: México, Colombia, Chile, Argentina, Ecuador.
+2. Si no hay suficiente data, ampliar a: Estados Unidos, España.
 
 ---
 
-### Paso 5 — Evaluar los atributos del producto
+### Etapa 2 — Evaluación profunda de candidatos
 
-Una vez que un producto pasa los filtros anteriores, el agente lo evalúa contra esta lista de características. **No es obligatorio cumplirlas todas**, pero cuantas más cumple, más potencial tiene el producto.
+Para cada anunciante que pasó el descarte, el agente hace una evaluación más cuidadosa:
+
+#### 2a. Identificar el producto específico
+
+El agente entra a la página del anunciante en Meta Ads Library para ver sus anuncios activos:
+```
+https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=XX&view_all_page_id=PAGE_ID
+```
+
+- Examina los anuncios para identificar **qué producto concreto** se está vendiendo.
+- Si la página es multi-producto, cuenta cuántos anuncios son del producto de interés. Si ese producto específico tiene menos de 30 anuncios propios, descartarlo.
+- Registra: nombre del producto, nombre de la página, `PAGE_ID` de Facebook, cantidad de anuncios del producto, fecha del primer anuncio activo.
+
+> **El `PAGE_ID` es el identificador que se usará en el link del slide final.** Si el agente no puede obtener el PAGE_ID, usa la URL directa a los anuncios de esa página tal como la encontró.
+
+#### 2b. Calcular días activos
+
+Días activos = fecha de hoy − fecha del anuncio más antiguo activo.
+
+**Umbral mínimo: 10 días.** Si no llega, descartar.
+
+#### 2c. Distinguir mono-producto vs multi-producto
+
+- **Mono-producto:** Toda o casi toda la inversión de la página está en un solo producto. Alta señal de validación.
+- **Multi-producto:** La página vende muchos productos. Solo cuenta si el producto específico tiene 30+ anuncios propios.
+
+#### 2d. Evaluar atributos del producto
+
+Una vez identificado el producto concreto, el agente lo evalúa contra los 7 atributos (ver sección siguiente). **No es obligatorio cumplirlos todos**, pero cuantos más cumple, más potencial tiene.
+
+---
+
+### Paso 3 — Evaluar los atributos del producto
+
+Una vez que un producto pasa la Etapa 2, el agente lo evalúa contra esta lista de características. **No es obligatorio cumplirlas todas**, pero cuantas más cumple, más potencial tiene el producto.
 
 | Característica | ¿Qué significa? |
 |---|---|
@@ -133,7 +147,7 @@ Una vez que un producto pasa los filtros anteriores, el agente lo evalúa contra
 
 ---
 
-### Paso 6 — Validar en el mercado peruano
+### Paso 4 — Validar en el mercado peruano
 
 Este es el paso más importante. El agente vuelve a la biblioteca de anuncios, pero ahora filtrando por **Perú**, y busca si alguien ya está vendiendo ese producto localmente.
 
@@ -182,7 +196,7 @@ Cada slide debe mostrar toda la información que justifica la recomendación, or
 | **Problema que resuelve** | El dolor específico que ataca |
 | **Países donde se pauta** | Lista de países encontrados en Meta Ads Library |
 | **Señales de validación** | Cantidad de anuncios · Días activo · Tipo de página (mono/multi-producto) |
-| **Link al anuncio** | URL directa a Meta Ads Library, abre en nueva pestaña |
+| **Link al anunciante** | URL directa a los anuncios de la página ganadora en Meta Ads Library — formato `https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=XX&view_all_page_id=PAGE_ID` — abre en nueva pestaña |
 | **Mercado en Perú** | Si hay competencia, cuánta, y si hay ventaja de entrada |
 | **Atributos cumplidos** | Lista visual de los atributos que aplican al producto |
 | **Prioridad** | Alta 🔥 / Media 🟡 — con color diferenciador en el slide |
@@ -234,15 +248,30 @@ El agente debe hablar como un amigo con experiencia en ventas, no como un report
 ```
 [Entrada: palabras clave o PDF de catálogo]
          ↓
-[Buscar en países externos (LATAM → US/ES)]
+[Expandir en ≥15 keywords por 4 direcciones]
          ↓
-[Filtro: ≥10 días activo + ≥30 anuncios + página no peruana]
+  Por cada keyword × país (LATAM primero):
+  ┌──────────────────────────────────┐
+  │  ETAPA 1 — Escaneo rápido        │
+  │  Extraer anunciantes del result  │
+  │  Descartar: <10 días / <30 ads   │
+  │  / página peruana / no físico    │
+  └──────────────┬───────────────────┘
+                 │ candidatos que pasan
+  ┌──────────────▼───────────────────┐
+  │  ETAPA 2 — Evaluación profunda   │
+  │  Entrar a la página del anunc.   │
+  │  → Identificar producto concreto │
+  │  → Obtener PAGE_ID               │
+  │  → Contar ads del producto       │
+  │  → Calcular días activos reales  │
+  │  → Evaluar 7 atributos           │
+  └──────────────┬───────────────────┘
+                 │ productos validados
          ↓
-[Evaluar atributos del producto]
+[Validar cada producto en Perú (escenarios A/B/C/D)]
          ↓
-[Validar en Perú: ¿hay competencia? ¿hay diferenciación?]
-         ↓
-[Output: lista de productos con explicación amigable]
+[Output: slides con link directo al PAGE_ID del anunciante]
 ```
 
 ### Template de referencia
