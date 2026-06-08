@@ -1,5 +1,15 @@
 {
   "enabledPlugins": {
-    "frontend-slides@frontend-slides": true
+    "frontend-slides@frontend-slides": true,
+    "playwright@claude-plugins-official": true
+  },
+  "mcpServers": {
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    }
   }
 }

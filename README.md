@@ -7,8 +7,7 @@ Encuentra productos con alto potencial de venta que todavía no están saturados
 ## ¿Qué necesitas para empezar?
 
 1. Una cuenta en [Claude.ai](https://claude.ai) o tener instalado [Claude Code](https://claude.ai/code)
-2. Una API key de [Firecrawl](https://www.firecrawl.dev) (para navegar la web)
-3. Unos 5 minutos
+2. Unos 5 minutos
 
 ---
 
@@ -25,17 +24,7 @@ cd product-hunter
 
 Si no tienes Git, descarga el ZIP desde el botón verde de GitHub y descomprímelo.
 
-### Paso 2 — Instala las skills de Firecrawl
-
-Ejecuta este comando en tu terminal. El asistente te pedirá tu API key de Firecrawl durante el proceso:
-
-```bash
-npx -y firecrawl-cli@latest init --all --browser
-```
-
-Cuando el wizard te lo pida, ingresa tu API key. Puedes obtenerla en [firecrawl.dev/app](https://www.firecrawl.dev/app).
-
-### Paso 3 — Abre el proyecto en Claude Code
+### Paso 2 — Abre el proyecto en Claude Code
 
 ```bash
 claude .

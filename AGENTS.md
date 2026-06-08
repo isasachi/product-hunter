@@ -17,6 +17,75 @@ El agente puede trabajar de dos formas:
 
 ---
 
+## Herramientas de scraping — Playwright MCP
+
+El agente usa el plugin **Playwright MCP** para todas las interacciones con el navegador. Está habilitado en `.claude/settings.json` bajo `enabledPlugins.playwright@claude-plugins-official`.
+
+### Tools disponibles para scraping
+
+| Tool | Para qué sirve |
+|---|---|
+| `mcp__plugin_playwright_playwright__browser_navigate` | Navegar a una URL |
+| `mcp__plugin_playwright_playwright__browser_snapshot` | Leer el árbol de accesibilidad de la página — extrae texto, links y estructura sin OCR |
+| `mcp__plugin_playwright_playwright__browser_wait_for` | Esperar que cargue el contenido dinámico antes de leer |
+| `mcp__plugin_playwright_playwright__browser_evaluate` | Ejecutar JavaScript para extraer datos específicos (PAGE_IDs, fechas, contadores) |
+| `mcp__plugin_playwright_playwright__browser_press_key` | Presionar `End` para hacer scroll y cargar más resultados |
+
+### Manejo de Meta Ads Library (SPA React)
+
+Meta Ads Library es una Single Page Application — el contenido no está disponible inmediatamente después del navigate. El agente debe seguir este patrón para cada búsqueda:
+
+1. **Navegar:** `browser_navigate` a la URL de búsqueda.
+2. **Esperar:** `browser_wait_for` a que aparezcan resultados (esperar texto "anuncio" o el contenedor de resultados).
+3. **Leer:** `browser_snapshot` para obtener el árbol de la página con todos los anunciantes visibles.
+4. **Cargar más:** si hacen falta más resultados, `browser_evaluate` con `window.scrollTo(0, document.body.scrollHeight)` → volver a esperar → nuevo `browser_snapshot`.
+
+### Extracción de PAGE_ID y AD_ID
+
+El agente necesita capturar **dos identificadores** por cada candidato para poder construir los links correctos en el output:
+
+#### PAGE_ID — identifica la página del anunciante
+
+Aparece en los links de cada card de anunciante. Extraer con `browser_evaluate` en la página de resultados:
+
+```javascript
+Array.from(document.querySelectorAll('a[href*="view_all_page_id"]'))
+  .map(a => new URL(a.href).searchParams.get('view_all_page_id'))
+  .filter(Boolean)
+```
+
+O leerlos directamente del snapshot (aparecen en los atributos `href` de los links de cada card).
+
+#### AD_ID — identifica un anuncio específico de esa página
+
+Una vez dentro de la página del anunciante (URL con `view_all_page_id`), extraer el ID del primer anuncio visible con `browser_evaluate`:
+
+```javascript
+Array.from(document.querySelectorAll('a[href*="id="]'))
+  .map(a => {
+    try {
+      const id = new URL(a.href).searchParams.get('id');
+      return (id && /^\d{10,}$/.test(id)) ? id : null;
+    } catch { return null; }
+  })
+  .filter(Boolean)[0]
+```
+
+Los AD_IDs son números de 10+ dígitos. Solo se necesita uno por producto (el primero visible alcanza).
+
+#### URLs finales para el output
+
+Con PAGE_ID y AD_ID, el agente construye dos links por producto:
+
+| Link | URL |
+|---|---|
+| **Página del anunciante** | `https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&is_targeted_country=false&media_type=all&search_type=page&sort_data[mode]=total_impressions&sort_data[direction]=desc&view_all_page_id=PAGE_ID` |
+| **Anuncio específico** | `https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&id=AD_ID&is_targeted_country=false&media_type=all&search_type=page&sort_data[mode]=total_impressions&sort_data[direction]=desc&view_all_page_id=PAGE_ID` |
+
+Si el agente no puede obtener el AD_ID, incluir solo el link al anunciante.
+
+---
+
 ## Modo libre — Expansión de palabras clave
 
 Cuando el usuario escribe una palabra o frase, el agente **no la usa tal cual**. Primero la expande en un set diverso de palabras clave para cubrir más ángulos del mismo tema y encontrar más productos.
@@ -71,19 +140,22 @@ El flujo tiene **tres etapas**: generación de keywords → escaneo y descarte r
 
 Para cada combinación de keyword + país, el agente:
 
-1. Abre la URL de búsqueda en Meta Ads Library:
+1. Navega a la URL de búsqueda con `browser_navigate`:
    ```
    https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=XX&q=KEYWORD&search_type=keyword_unordered
    ```
-2. Extrae la lista de **anunciantes individuales** que aparecen en esa búsqueda. Cada anunciante es un resultado separado con su nombre de página, cantidad de anuncios y fecha del anuncio más antiguo activo.
+   Luego usa `browser_wait_for` para esperar que carguen los resultados, y `browser_snapshot` para leer la página.
+2. Extrae la lista de **anunciantes individuales** del snapshot. Cada anunciante es un resultado separado con su nombre de página, cantidad de anuncios y fecha del anuncio más antiguo activo. Si necesita más resultados, hace scroll con `browser_evaluate` (`window.scrollTo(0, document.body.scrollHeight)`) y repite el snapshot.
 3. Aplica el **descarte rápido** anunciante por anunciante:
 
 | Criterio | Descartar si... |
 |---|---|
 | Antigüedad | El anuncio más antiguo lleva menos de 10 días activo |
-| Volumen bruto | La página tiene menos de 30 anuncios en total |
+| Volumen bruto | **La card del anunciante muestra menos de 30 anuncios propios** |
 | Origen | La página es peruana (nombre, descripción o URL local) |
 | Categoría | La página claramente no vende productos físicos (servicios, eventos, instituciones) |
+
+> ⚠️ **Error frecuente — leer el volumen mal:** El número que cuenta para el filtro es el que aparece en la card **de ese anunciante específico** (ej: "47 anuncios"). **No es** el total de resultados del keyword search (ej: "Se encontraron 230 anuncios para 'bajar de peso'"). El total del search suma todos los anunciantes — es irrelevante para el filtro. Si la card de un anunciante muestra 18 ads, ese anunciante no pasa, aunque el keyword tenga 500 resultados totales.
 
 4. Los anunciantes que **pasan el descarte rápido** avanzan a la Etapa 2.
 
@@ -101,14 +173,15 @@ Para cada anunciante que pasó el descarte, el agente hace una evaluación más 
 
 #### 2a. Identificar el producto específico
 
-El agente entra a la página del anunciante en Meta Ads Library para ver sus anuncios activos:
+El agente usa `browser_navigate` para entrar a la página del anunciante en Meta Ads Library:
 ```
 https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=XX&view_all_page_id=PAGE_ID
 ```
+Luego `browser_wait_for` + `browser_snapshot` para leer los anuncios activos. Si hay muchos anuncios, usar `browser_evaluate` con `window.scrollTo` para cargar más.
 
 - Examina los anuncios para identificar **qué producto concreto** se está vendiendo.
 - Si la página es multi-producto, cuenta cuántos anuncios son del producto de interés. Si ese producto específico tiene menos de 30 anuncios propios, descartarlo.
-- Registra: nombre del producto, nombre de la página, `PAGE_ID` de Facebook, cantidad de anuncios del producto, fecha del primer anuncio activo.
+- Registra: nombre del producto, nombre de la página, `PAGE_ID` de Facebook, `AD_ID` del primer anuncio visible, cantidad de anuncios del producto, fecha del primer anuncio activo.
 
 > **El `PAGE_ID` es el identificador que se usará en el link del slide final.** Si el agente no puede obtener el PAGE_ID, usa la URL directa a los anuncios de esa página tal como la encontró.
 
@@ -149,7 +222,7 @@ Una vez que un producto pasa la Etapa 2, el agente lo evalúa contra esta lista 
 
 ### Paso 4 — Validar en el mercado peruano
 
-Este es el paso más importante. El agente vuelve a la biblioteca de anuncios, pero ahora filtrando por **Perú**, y busca si alguien ya está vendiendo ese producto localmente.
+Este es el paso más importante. El agente usa `browser_navigate` para volver a la biblioteca de anuncios filtrando por **Perú**, y con `browser_snapshot` busca si alguien ya está vendiendo ese producto localmente.
 
 La búsqueda no debe hacerse solo por el nombre exacto del producto, porque muchos vendedores lo importan y le cambian el nombre. Hay que buscar también por:
 
@@ -196,7 +269,8 @@ Cada slide debe mostrar toda la información que justifica la recomendación, or
 | **Problema que resuelve** | El dolor específico que ataca |
 | **Países donde se pauta** | Lista de países encontrados en Meta Ads Library |
 | **Señales de validación** | Cantidad de anuncios · Días activo · Tipo de página (mono/multi-producto) |
-| **Link al anunciante** | URL directa a los anuncios de la página ganadora en Meta Ads Library — formato `https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=XX&view_all_page_id=PAGE_ID` — abre en nueva pestaña |
+| **Link al anunciante** | URL de todos los anuncios de esa página — formato `https://www.facebook.com/ads/library/?...&view_all_page_id=PAGE_ID` — abre en nueva pestaña. Ver formato exacto en la sección "Extracción de PAGE_ID y AD_ID". |
+| **Link a un anuncio** | URL de un anuncio específico — formato `https://www.facebook.com/ads/library/?...&id=AD_ID&view_all_page_id=PAGE_ID`. Si no hay AD_ID disponible, omitir este link. |
 | **Mercado en Perú** | Si hay competencia, cuánta, y si hay ventaja de entrada |
 | **Atributos cumplidos** | Lista visual de los atributos que aplican al producto |
 | **Prioridad** | Alta 🔥 / Media 🟡 — con color diferenciador en el slide |
@@ -262,7 +336,7 @@ El agente debe hablar como un amigo con experiencia en ventas, no como un report
   │  ETAPA 2 — Evaluación profunda   │
   │  Entrar a la página del anunc.   │
   │  → Identificar producto concreto │
-  │  → Obtener PAGE_ID               │
+  │  → Obtener PAGE_ID + AD_ID        │
   │  → Contar ads del producto       │
   │  → Calcular días activos reales  │
   │  → Evaluar 7 atributos           │
