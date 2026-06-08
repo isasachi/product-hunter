@@ -277,8 +277,7 @@ Cada slide debe mostrar toda la información que justifica la recomendación, or
 | **Problema que resuelve** | El dolor específico que ataca |
 | **Países donde se pauta** | Lista de países encontrados en Meta Ads Library |
 | **Señales de validación** | Cantidad de anuncios · Días activo · Tipo de página (mono/multi-producto) |
-| **Link al anunciante** | URL de todos los anuncios de esa página — formato `https://www.facebook.com/ads/library/?...&view_all_page_id=PAGE_ID` — abre en nueva pestaña. Ver formato exacto en la sección "Extracción de PAGE_ID y AD_ID". |
-| **Link a un anuncio** | URL de un anuncio específico — formato `https://www.facebook.com/ads/library/?...&id=AD_ID&view_all_page_id=PAGE_ID`. Si no hay AD_ID disponible, omitir este link. |
+| **Botones de link** | Dos botones siempre presentes en cada slide: **(1) "Ver anuncio"** → `https://www.facebook.com/ads/library/?id=AD_ID` (botón filled, naranja); **(2) "Ver todos los anuncios"** → `https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&is_targeted_country=false&media_type=all&search_type=page&sort_data[mode]=total_impressions&sort_data[direction]=desc&view_all_page_id=PAGE_ID` (botón ghost/outline). Ambos abren en nueva pestaña. El agente **debe obtener ambos IDs** (AD_ID y PAGE_ID) durante la Etapa 2. |
 | **Mercado en Perú** | **Siempre**: nombre exacto de cada competidor y cuántos anuncios corre. Si no hay competidores: "0 competidores — buscamos [keywords] y no encontramos marcas activas." Si hay competidores: lista con formato "Marca X — 38 ads · Marca Y — 14 ads · Marca Z — 9 ads". Nunca frases vagas sin datos. Los escenarios A/B/C/D son clasificación interna — no aparecen en el slide. |
 | **Atributos cumplidos** | Lista visual de los atributos que aplican al producto |
 | **Prioridad** | Alta 🔥 / Media 🟡 — con color diferenciador en el slide |
