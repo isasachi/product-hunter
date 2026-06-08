@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "sequential-thinking": {
+      "source": "thedotmack/sequential-thinking-skill",
+      "sourceType": "github",
+      "skillPath": "sequential-thinking/SKILL.md",
+      "computedHash": "00b7c243ff4372ebf848cab3bc0f9dc99c1dd8647cf6cd5a1c620f6ff91894b8"
+    }
+  }
+}
