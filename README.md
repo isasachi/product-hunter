@@ -18,7 +18,7 @@ Encuentra productos con alto potencial de venta que todavía no están saturados
 Si tienes Git instalado, abre una terminal y escribe:
 
 ```bash
-git clone https://github.com/tu-usuario/product-hunter.git
+git clone https://github.com/isasachi/product-hunter.git
 cd product-hunter
 ```
 
