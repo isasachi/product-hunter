@@ -224,13 +224,53 @@ Una vez que un producto pasa la Etapa 2, el agente lo evalúa contra esta lista 
 
 ### Paso 4 — Validar en el mercado peruano
 
-Este es el paso más importante. El agente usa `browser_navigate` para volver a la biblioteca de anuncios filtrando por **Perú**, y con `browser_snapshot` busca si alguien ya está vendiendo ese producto localmente.
+Este es el paso más importante. Tiene **dos sub-pasos**: primero buscar competidores directos del producto, y segundo mapear qué vehículos/formatos ya existen en Perú para ese mismo problema.
 
-La búsqueda no debe hacerse solo por el nombre exacto del producto, porque muchos vendedores lo importan y le cambian el nombre. Hay que buscar también por:
+---
 
-- Los **componentes principales** del producto.
-- El **dolor o problema** que resuelve (ej: "bajar de peso", "postura", "barba").
-- El **tipo de producto** (ej: "jarabe", "parche", "crema").
+#### 4a. Buscar competidores directos del producto
+
+El agente hace **varias búsquedas cortas** en Meta Ads Library filtrando por `country=PE`. Las keywords deben ser **cortas y diferenciales** — una frase larga devuelve pocos resultados porque los vendedores usan nombres distintos en cada país.
+
+**Orden de búsquedas recomendado (de más específico a más amplio):**
+
+1. **Nombre de marca** — si se conoce (ej: `NIDA Skincare`, `Cicatree`)
+2. **Nombre del producto** — sin adjetivos (ej: `stick cicatrices`, `roll-on ojeras`)
+3. **Formato / presentación** — solo el vehículo (ej: `stick`, `roll-on`, `serum`, `parche`)
+4. **Ingrediente principal** — si es diferenciador (ej: `niacinamida`, `acido kojico`, `cafeína`)
+5. **Problema** — amplio (ej: `manchas acne`, `ojeras`, `cicatrices`)
+
+> ⚠️ **Regla de keywords cortas:** Preferir `stick cicatrices` sobre `stick reparador cicatrices acné madecassoside`. La segunda puede devolver 0 resultados aunque haya competidores. Cada búsqueda debe tener máximo 3 palabras.
+
+Registrar por cada búsqueda: keyword usada → número de marcas encontradas → nombre y ad count de cada una.
+
+---
+
+#### 4b. Mapear vehículos/formatos presentes en Perú para el mismo problema
+
+Una vez identificado el problema que resuelve el producto (ej: "manchas post-acné"), el agente hace **búsquedas amplias por formato** para responder: ¿qué vehículos ya se están vendiendo en Perú para este mismo dolor?
+
+Buscar en PE las combinaciones: `[problema] + [formato]` para los formatos más comunes:
+
+| Formatos a verificar | Keywords de ejemplo |
+|---|---|
+| sérum | `serum manchas acne` |
+| crema | `crema manchas acne` |
+| jabón | `jabon acne manchas` |
+| kit / rutina | `kit acne manchas` |
+| parche | `parche acne` |
+| pastillas / suplementos | `pastillas acne manchas` |
+| roll-on / stick | `stick manchas` · `roll-on acne` |
+| mascarilla | `mascarilla acne manchas` |
+
+Para cada formato registrar: ¿hay anunciantes activos en PE? → cuántos (aproximado). Clasificar como:
+- 🔴 **Saturado** — 4+ marcas activas con este formato
+- 🟡 **Presente** — 1–3 marcas activas
+- 🟢 **Libre** — 0 marcas activas con este formato
+
+Este mapa de vehículos **siempre aparece en el slide**, independientemente de si el producto candidato tiene competencia directa o no.
+
+---
 
 #### ¿Qué hacer según lo que se encuentre?
 
@@ -278,7 +318,7 @@ Cada slide debe mostrar toda la información que justifica la recomendación, or
 | **Países donde se pauta** | Lista de países encontrados en Meta Ads Library |
 | **Señales de validación** | Cantidad de anuncios · Días activo · Tipo de página (mono/multi-producto) |
 | **Botones de link** | Dos botones siempre presentes en cada slide: **(1) "Ver anuncio"** → `https://www.facebook.com/ads/library/?id=AD_ID` (botón filled, naranja); **(2) "Ver todos los anuncios"** → `https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&is_targeted_country=false&media_type=all&search_type=page&sort_data[mode]=total_impressions&sort_data[direction]=desc&view_all_page_id=PAGE_ID` (botón ghost/outline). Ambos abren en nueva pestaña. El agente **debe obtener ambos IDs** (AD_ID y PAGE_ID) durante la Etapa 2. |
-| **Mercado en Perú** | **Siempre**: nombre exacto de cada competidor y cuántos anuncios corre. Si no hay competidores: "0 competidores — buscamos [keywords] y no encontramos marcas activas." Si hay competidores: lista con formato "Marca X — 38 ads · Marca Y — 14 ads · Marca Z — 9 ads". Nunca frases vagas sin datos. Los escenarios A/B/C/D son clasificación interna — no aparecen en el slide. |
+| **Mercado en Perú** | Dos sub-secciones siempre presentes: **(1) Competencia directa** — dot de color + texto con nombre exacto y ad count de cada competidor. Si 0 competidores: "0 competidores directos — buscamos [keywords]". **(2) Vehículos en Perú** — chips con código de color: 🔴 saturado (4+ marcas) · 🟡 presente (1–3 marcas) · 🟢 libre (0 marcas). Un chip por formato relevante al problema. Nunca frases vagas sin datos. Los escenarios A/B/C/D son clasificación interna. |
 | **Atributos cumplidos** | Lista visual de los atributos que aplican al producto |
 | **Prioridad** | Alta 🔥 / Media 🟡 — con color diferenciador en el slide |
 

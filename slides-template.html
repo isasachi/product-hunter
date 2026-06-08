@@ -297,6 +297,28 @@
 
   .peru-status-text { font-size: .9rem; font-weight: 500; color: var(--text); }
   .peru-detail { font-size: .82rem; color: var(--muted); line-height: 1.5; }
+
+  .peru-vehicles-block { display: flex; flex-direction: column; gap: 6px; }
+  .peru-vehicles-label {
+    font-size: .6rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    opacity: .7;
+  }
+  .peru-vehicles { display: flex; flex-wrap: wrap; gap: 6px; }
+  .vtag {
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+  }
+  .vtag-red    { background: rgba(224,80,80,.12);  border: 1px solid rgba(224,80,80,.3);  color: #e05050; }
+  .vtag-yellow { background: rgba(201,168,76,.12); border: 1px solid rgba(201,168,76,.3); color: var(--mid); }
+  .vtag-green  { background: rgba(61,186,126,.12); border: 1px solid rgba(61,186,126,.3); color: var(--success); }
+
   .diferenciacion {
     font-size: .82rem;
     padding: 8px 14px;
@@ -524,9 +546,18 @@
           <span class="block-eyebrow">Mercado en Perú 🇵🇪</span>
           <div class="peru-status">
             <div class="peru-dot dot-green"></div>
-            <span class="peru-status-text">Sin competencia directa</span>
+            <span class="peru-status-text">0 competidores directos</span>
           </div>
-          <p class="peru-detail">Buscamos "corrector postura", "faja espalda magnética" y "postura magnetos" en Perú. No hay páginas peruanas pautando este formato específico.</p>
+          <p class="peru-detail">Buscamos "corrector postura" · "faja magnética" · "postura" en PE. 0 marcas activas con este formato.</p>
+          <div class="peru-vehicles-block">
+            <span class="peru-vehicles-label">Vehículos en Perú — postura / espalda</span>
+            <div class="peru-vehicles">
+              <span class="vtag vtag-red">faja lumbar</span>
+              <span class="vtag vtag-yellow">masajeador</span>
+              <span class="vtag vtag-green">corrector magnético</span>
+              <span class="vtag vtag-green">parche térmico</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -600,11 +631,20 @@
           <span class="block-eyebrow">Mercado en Perú 🇵🇪</span>
           <div class="peru-status">
             <div class="peru-dot dot-yellow"></div>
-            <span class="peru-status-text">Hay competencia — pero hay ventaja</span>
+            <span class="peru-status-text">2 competidores ligeros</span>
           </div>
-          <p class="peru-detail">Encontramos 2 páginas peruanas vendiendo parches térmicos genéricos, pero ninguna usa el ángulo del jengibre.</p>
+          <p class="peru-detail">Buscamos "parche térmico" · "parche lumbar" · "parche calor" en PE. 2 marcas activas: <strong>Dolor Cero PE — 8 ads</strong> · <strong>BioPatch — 3 ads</strong>. Ninguna usa ángulo de jengibre.</p>
+          <div class="peru-vehicles-block">
+            <span class="peru-vehicles-label">Vehículos en Perú — dolor lumbar / espalda</span>
+            <div class="peru-vehicles">
+              <span class="vtag vtag-red">faja lumbar</span>
+              <span class="vtag vtag-yellow">parche térmico</span>
+              <span class="vtag vtag-yellow">masajeador</span>
+              <span class="vtag vtag-green">parche jengibre</span>
+            </div>
+          </div>
           <div class="diferenciacion">
-            💡 <strong>Ventaja de entrada:</strong> Cambio de componente — el ingrediente "jengibre" diferencia el producto y puede justificar un precio mayor.
+            💡 <strong>Ventaja de entrada:</strong> El parche de jengibre no tiene representación — cambio de componente en un formato ya validado.
           </div>
         </div>
       </div>
