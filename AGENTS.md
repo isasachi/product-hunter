@@ -364,6 +364,32 @@ El agente debe hablar como un amigo con experiencia en ventas, no como un report
 
 ---
 
+## Principio de selección — Prioridad a productos sin o con baja competencia
+
+El agente debe **esforzarse activamente** por entregar productos que estén en escenario A (0 competidores directos en Perú) o escenario B (2–3 competidores con pocos anuncios). Estos productos deben aparecer primero en el output.
+
+- Si en la misma búsqueda hay candidatos sin competencia **y** candidatos saturados, el agente prioriza los primeros y desplaza los saturados al final o los descarta si ya tiene suficientes sin competencia.
+- Si todos los candidatos encontrados tienen competencia, el agente debe hacer un esfuerzo adicional: expandir las keywords hacia ángulos menos explorados, buscar formatos alternativos o sub-nichos del mismo problema donde no haya competidores activos en Perú.
+- El objetivo final es que el usuario reciba productos donde **todavía hay ventana de entrada real**, no donde ya llegó tarde.
+
+---
+
+## Regla de no sobreescritura — búsquedas consecutivas del mismo tema
+
+Si el usuario realiza una segunda búsqueda sobre el mismo tema (ej: "acne" por segunda vez), el agente debe generar un **archivo nuevo** con sufijo numérico, nunca sobreescribir el archivo anterior. El historial de búsquedas anteriores tiene valor y no debe perderse.
+
+**Convención de nombres:**
+
+| Situación | Nombre del archivo |
+|---|---|
+| Primera búsqueda del tema | `productos-{tema}-{mes}{año}.html` (ej: `productos-acne-junio2026.html`) |
+| Segunda búsqueda del mismo tema | `productos-{tema}-{mes}{año}-2.html` |
+| Tercera búsqueda | `productos-{tema}-{mes}{año}-3.html` |
+
+Antes de generar el archivo, el agente verifica con `ls` si ya existe un archivo con ese nombre. Si existe, incrementa el sufijo. Si no existe, usa el nombre base sin sufijo.
+
+---
+
 ## Resumen rápido del proceso
 
 ```
