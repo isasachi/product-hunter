@@ -236,13 +236,14 @@ La búsqueda no debe hacerse solo por el nombre exacto del producto, porque much
 
 **Escenario A — No hay nadie vendiéndolo en Perú:**
 ✅ Excelente. Producto con alta oportunidad. Recomendar con prioridad alta.
+En el slide mostrar: las keywords exactas que se buscaron y cuántos resultados relevantes devolvió cada una. Ej: "Buscamos 'serum niacinamida manchas' → 0 marcas activas · 'manchas post acné crema' → 1 resultado (clínica, no producto físico). 0 competidores directos."
 
 **Escenario B — Hay poca competencia (2-3 vendedores con pocos anuncios):**
 🟡 Aceptable. El mercado existe pero no está saturado. Recomendar con prioridad media.
-Reportar: cuántos competidores hay y cuántos anuncios tiene cada uno (ej: "2 competidores: Marca X con 12 ads, Marca Y con 8 ads").
+En el slide mostrar: cuántos competidores hay y cuántos anuncios corre cada uno con su nombre exacto. Ej: "2 competidores — Marca X: 12 ads · Marca Y: 8 ads."
 
 **Escenario C — Hay varios vendedores activos:**
-Reportar: cuántos competidores hay, los nombres de los principales, y cuántos anuncios tiene cada uno (ej: "4 competidores: Bioforma 38 ads, WoVital 25 ads, PowerFactor 18 ads, Kuranatural 14 ads").
+En el slide mostrar: cuántos competidores hay, los nombres exactos de los principales, y cuántos anuncios corre cada uno. Ej: "4 competidores — Bioforma: 38 ads · WoVital: 25 ads · PowerFactor: 18 ads · Kuranatural: 14 ads."
 Evaluar si se puede diferenciar de alguna de estas dos formas:
 
 - **Cambio de vehículo:** Mismo dolor, distinto formato. Si todos venden gomitas para bajar de peso, buscar si existe el mismo beneficio en parche, polvo, crema, etc.
@@ -253,7 +254,9 @@ Si no hay diferenciación → descartar el producto.
 
 **Escenario D — El mercado está saturado (muchos vendedores, muchos formatos):**
 🔴 Descartar. Demasiada competencia para entrar con ventaja.
-Reportar igualmente: cuántos competidores y cuántos ads tiene cada uno, para que el usuario vea por qué se descartó.
+En el slide mostrar igualmente: cuántos competidores hay y cuántos anuncios corre cada uno con su nombre exacto, para que el usuario vea por qué se descartó.
+
+> ⚠️ **Regla absoluta — datos exactos siempre:** En el slide de Perú está **prohibido** escribir frases vagas como "no hay competencia directa", "hay poca competencia" o "2 páginas peruanas" sin respaldarlas con nombres reales y conteos reales. El agente **debe haber buscado en Perú** antes de escribir ese bloque, y debe mostrar exactamente qué encontró: nombres de marcas, número de anuncios de cada una. Si el resultado es cero, decir explícitamente cuántas keywords se buscaron y que ninguna devolvió competidores. Nunca asumir el escenario sin haberlo verificado.
 
 ---
 
@@ -276,7 +279,7 @@ Cada slide debe mostrar toda la información que justifica la recomendación, or
 | **Señales de validación** | Cantidad de anuncios · Días activo · Tipo de página (mono/multi-producto) |
 | **Link al anunciante** | URL de todos los anuncios de esa página — formato `https://www.facebook.com/ads/library/?...&view_all_page_id=PAGE_ID` — abre en nueva pestaña. Ver formato exacto en la sección "Extracción de PAGE_ID y AD_ID". |
 | **Link a un anuncio** | URL de un anuncio específico — formato `https://www.facebook.com/ads/library/?...&id=AD_ID&view_all_page_id=PAGE_ID`. Si no hay AD_ID disponible, omitir este link. |
-| **Mercado en Perú** | Escenario (A/B/C/D) + si hay competidores: cuántos son, nombre de cada uno y cuántos anuncios corre cada uno (ej: "3 competidores: Marca X 38 ads · Marca Y 14 ads · Marca Z 9 ads") + si hay ventaja de entrada |
+| **Mercado en Perú** | **Siempre**: nombre exacto de cada competidor y cuántos anuncios corre. Si no hay competidores: "0 competidores — buscamos [keywords] y no encontramos marcas activas." Si hay competidores: lista con formato "Marca X — 38 ads · Marca Y — 14 ads · Marca Z — 9 ads". Nunca frases vagas sin datos. Los escenarios A/B/C/D son clasificación interna — no aparecen en el slide. |
 | **Atributos cumplidos** | Lista visual de los atributos que aplican al producto |
 | **Prioridad** | Alta 🔥 / Media 🟡 — con color diferenciador en el slide |
 
