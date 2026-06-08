@@ -151,11 +151,13 @@ Para cada combinación de keyword + país, el agente:
 | Criterio | Descartar si... |
 |---|---|
 | Antigüedad | El anuncio más antiguo lleva menos de 10 días activo |
-| Volumen bruto | **La card del anunciante muestra menos de 30 anuncios propios** |
+| Volumen bruto | **La card del anunciante muestra menos de 40 anuncios propios** |
 | Origen | La página es peruana (nombre, descripción o URL local) |
 | Categoría | La página claramente no vende productos físicos (servicios, eventos, instituciones) |
 
 > ⚠️ **Error frecuente — leer el volumen mal:** El número que cuenta para el filtro es el que aparece en la card **de ese anunciante específico** (ej: "47 anuncios"). **No es** el total de resultados del keyword search (ej: "Se encontraron 230 anuncios para 'bajar de peso'"). El total del search suma todos los anunciantes — es irrelevante para el filtro. Si la card de un anunciante muestra 18 ads, ese anunciante no pasa, aunque el keyword tenga 500 resultados totales.
+
+> ⚠️ **Error frecuente — contar ads de productos distintos:** Una página con 40+ anuncios puede vender 10 productos diferentes. Los 40 anuncios deben ser **del mismo producto**. Si en la Etapa 2 se descubre que la página es multi-producto y el producto de interés tiene menos de 40 ads propios, descartarlo aunque el total de la página supere el umbral.
 
 4. Los anunciantes que **pasan el descarte rápido** avanzan a la Etapa 2.
 
@@ -180,7 +182,7 @@ https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=X
 Luego `browser_wait_for` + `browser_snapshot` para leer los anuncios activos. Si hay muchos anuncios, usar `browser_evaluate` con `window.scrollTo` para cargar más.
 
 - Examina los anuncios para identificar **qué producto concreto** se está vendiendo.
-- Si la página es multi-producto, cuenta cuántos anuncios son del producto de interés. Si ese producto específico tiene menos de 30 anuncios propios, descartarlo.
+- Si la página es multi-producto, cuenta cuántos anuncios son del producto de interés. Si ese producto específico tiene menos de 40 anuncios propios, descartarlo.
 - Registra: nombre del producto, nombre de la página, `PAGE_ID` de Facebook, `AD_ID` del primer anuncio visible, cantidad de anuncios del producto, fecha del primer anuncio activo.
 
 > **El `PAGE_ID` es el identificador que se usará en el link del slide final.** Si el agente no puede obtener el PAGE_ID, usa la URL directa a los anuncios de esa página tal como la encontró.
@@ -194,7 +196,7 @@ Días activos = fecha de hoy − fecha del anuncio más antiguo activo.
 #### 2c. Distinguir mono-producto vs multi-producto
 
 - **Mono-producto:** Toda o casi toda la inversión de la página está en un solo producto. Alta señal de validación.
-- **Multi-producto:** La página vende muchos productos. Solo cuenta si el producto específico tiene 30+ anuncios propios.
+- **Multi-producto:** La página vende muchos productos. Solo cuenta si el producto específico tiene 40+ anuncios propios.
 
 #### 2d. Evaluar atributos del producto
 
@@ -237,8 +239,10 @@ La búsqueda no debe hacerse solo por el nombre exacto del producto, porque much
 
 **Escenario B — Hay poca competencia (2-3 vendedores con pocos anuncios):**
 🟡 Aceptable. El mercado existe pero no está saturado. Recomendar con prioridad media.
+Reportar: cuántos competidores hay y cuántos anuncios tiene cada uno (ej: "2 competidores: Marca X con 12 ads, Marca Y con 8 ads").
 
 **Escenario C — Hay varios vendedores activos:**
+Reportar: cuántos competidores hay, los nombres de los principales, y cuántos anuncios tiene cada uno (ej: "4 competidores: Bioforma 38 ads, WoVital 25 ads, PowerFactor 18 ads, Kuranatural 14 ads").
 Evaluar si se puede diferenciar de alguna de estas dos formas:
 
 - **Cambio de vehículo:** Mismo dolor, distinto formato. Si todos venden gomitas para bajar de peso, buscar si existe el mismo beneficio en parche, polvo, crema, etc.
@@ -249,6 +253,7 @@ Si no hay diferenciación → descartar el producto.
 
 **Escenario D — El mercado está saturado (muchos vendedores, muchos formatos):**
 🔴 Descartar. Demasiada competencia para entrar con ventaja.
+Reportar igualmente: cuántos competidores y cuántos ads tiene cada uno, para que el usuario vea por qué se descartó.
 
 ---
 
@@ -271,7 +276,7 @@ Cada slide debe mostrar toda la información que justifica la recomendación, or
 | **Señales de validación** | Cantidad de anuncios · Días activo · Tipo de página (mono/multi-producto) |
 | **Link al anunciante** | URL de todos los anuncios de esa página — formato `https://www.facebook.com/ads/library/?...&view_all_page_id=PAGE_ID` — abre en nueva pestaña. Ver formato exacto en la sección "Extracción de PAGE_ID y AD_ID". |
 | **Link a un anuncio** | URL de un anuncio específico — formato `https://www.facebook.com/ads/library/?...&id=AD_ID&view_all_page_id=PAGE_ID`. Si no hay AD_ID disponible, omitir este link. |
-| **Mercado en Perú** | Si hay competencia, cuánta, y si hay ventaja de entrada |
+| **Mercado en Perú** | Escenario (A/B/C/D) + si hay competidores: cuántos son, nombre de cada uno y cuántos anuncios corre cada uno (ej: "3 competidores: Marca X 38 ads · Marca Y 14 ads · Marca Z 9 ads") + si hay ventaja de entrada |
 | **Atributos cumplidos** | Lista visual de los atributos que aplican al producto |
 | **Prioridad** | Alta 🔥 / Media 🟡 — con color diferenciador en el slide |
 
